@@ -48,17 +48,21 @@ sed -i -e "s/pm.max_requests = 500/pm.max_requests = 200/g" /etc/php5/fpm/pool.d
 
 # fix ownership of sock file for php-fpm
 RUN sed -i -e "s/;listen.mode = 0660/listen.mode = 0750/g" /etc/php5/fpm/pool.d/www.conf && \
+sed -i -e "s|listen = /var/run/php5-fpm.sock|listen = 127.0.0.1:9000|g" /etc/php5/fpm/pool.d/www.conf && \
 find /etc/php5/cli/conf.d/ -name "*.ini" -exec sed -i -re 's/^(\s*)#(.*)/\1;\2/g' {} \;
 
 # mycrypt conf
 RUN php5enmod mcrypt
 
 # nginx site conf
-RUN rm -Rf /etc/nginx/conf.d/* && \
-rm -Rf /etc/nginx/sites-available/default && \
-mkdir -p /etc/nginx/ssl/
-ADD conf/nginx-site.conf /etc/nginx/sites-available/default.conf
-RUN ln -s /etc/nginx/sites-available/default.conf /etc/nginx/sites-enabled/default.conf
+#RUN rm -Rf /etc/nginx/conf.d/* && \
+#rm -Rf /etc/nginx/sites-available/default && \
+#mkdir -p /etc/nginx/ssl/
+#ADD conf/nginx-site.conf /etc/nginx/sites-available/default.conf
+#RUN ln -s /etc/nginx/sites-available/default.conf /etc/nginx/sites-enabled/default.conf
+
+RUN rm -Rf /etc/nginx/sites-available/default && \
+rm -Rf /etc/nginx/sites-enabled/default
 
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php && \

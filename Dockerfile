@@ -1,5 +1,5 @@
-FROM ubuntu:14.04.4
-MAINTAINER Ric Harvey <ric@ngineered.co.uk>
+FROM ubuntu:14.04
+MAINTAINER Katie Graham <katie@webscope.co.nz>
 
 # Surpress Upstart errors/warning
 RUN dpkg-divert --local --rename --add /sbin/initctl
@@ -17,7 +17,7 @@ nginx=stable && \
 add-apt-repository ppa:nginx/$nginx && \
 apt-get update && \
 apt-get upgrade -y && \
-BUILD_PACKAGES="supervisor nginx php5-fpm git php5-mysql php-apc php5-curl php5-gd php5-intl php5-mcrypt php5-memcache php5-sqlite php5-tidy php5-xmlrpc php5-xsl php5-pgsql php5-mongo php5-ldap pwgen" && \
+BUILD_PACKAGES="supervisor nginx php5-fpm git php5-mysql php-apc php5-curl php5-gd php5-intl php5-mcrypt php5-memcache php5-sqlite php5-tidy php5-xmlrpc php5-xsl php5-pgsql php5-mongo php5-ldap pwgen curl php5-mssql" && \
 apt-get -y install $BUILD_PACKAGES && \
 apt-get remove --purge -y software-properties-common && \
 apt-get autoremove -y && \
@@ -60,6 +60,11 @@ mkdir -p /etc/nginx/ssl/
 ADD conf/nginx-site.conf /etc/nginx/sites-available/default.conf
 RUN ln -s /etc/nginx/sites-available/default.conf /etc/nginx/sites-enabled/default.conf
 
+# Install composer
+RUN curl -sS https://getcomposer.org/installer | php && \
+    mv composer.phar /usr/local/bin/composer && \
+    composer global require hirak/prestissimo
+
 # Add git commands to allow container updating
 ADD scripts/pull /usr/bin/pull
 ADD scripts/push /usr/bin/push
@@ -73,14 +78,13 @@ ADD scripts/start.sh /start.sh
 RUN chmod 755 /start.sh
 
 # Setup Volume
-VOLUME ["/usr/share/nginx/html"]
+VOLUME ["/var/www", "/etc/nginx/sites-enabled"]
 
 # add test PHP file
-ADD src/index.php /usr/share/nginx/html/index.php
-RUN chown -Rf www-data.www-data /usr/share/nginx/html/
+ADD src/index.php /var/www/index.php
+RUN chown -Rf www-data.www-data /var/www/
 
 # Expose Ports
-EXPOSE 443
-EXPOSE 80
+EXPOSE 80 9000
 
 CMD ["/bin/bash", "/start.sh"]

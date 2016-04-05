@@ -32,6 +32,7 @@ rm -rf /usr/share/man/??_*
 RUN sed -i -e"s/worker_processes  1/worker_processes 5/" /etc/nginx/nginx.conf && \
 sed -i -e"s/keepalive_timeout\s*65/keepalive_timeout 2/" /etc/nginx/nginx.conf && \
 sed -i -e"s/keepalive_timeout 2/keepalive_timeout 2;\n\tclient_max_body_size 100m/" /etc/nginx/nginx.conf && \
+sed -i 's/sendfile on/sendfile off/g' /etc/nginx/nginx.conf && \
 echo "daemon off;" >> /etc/nginx/nginx.conf
 
 # tweak php-fpm config

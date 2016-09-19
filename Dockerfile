@@ -93,6 +93,9 @@ ADD conf/supervisord.conf /etc/supervisord.conf
 ADD scripts/start.sh /start.sh
 RUN chmod 755 /start.sh
 
+# Start php-fpm
+RUN service php5.6-fpm start
+
 # Setup Volume
 VOLUME ["/var/www", "/etc/nginx/sites-enabled"]
 

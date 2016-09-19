@@ -28,7 +28,7 @@ add-apt-repository ppa:nginx/$nginx && \
 add-apt-repository ppa:ondrej/php && \
 apt-get update && \
 apt-get upgrade -y && \
-BUILD_PACKAGES="supervisor nginx php5.6-fpm git php5.6-mysql php-apc php5.6-curl php5.6-gd php5.6-intl php5.6-mcrypt php-memcache php5.6-sqlite3 php5.6-tidy php5.6-xmlrpc php5.6-xsl php5.6-pgsql php-mongo php5.6-ldap pwgen curl php5-mssql" && \
+BUILD_PACKAGES="supervisor nginx php5.6-fpm git php5.6-mysql php-apc php5.6-curl php5.6-gd php5.6-intl php5.6-mcrypt php-memcache php5.6-sqlite3 php5.6-tidy php5.6-xmlrpc php5.6-xsl php5.6-pgsql php-mongo php5.6-ldap pwgen curl php5-mssql php5.6-mbstring" && \
 apt-get -y install $BUILD_PACKAGES && \
 apt-get remove --purge -y software-properties-common && \
 apt-get autoremove -y && \

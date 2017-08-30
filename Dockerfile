@@ -1,5 +1,4 @@
 FROM ubuntu:16.04
-MAINTAINER Ric Harvey <ric@ngineered.co.uk>
 
 # Surpress Upstart errors/warning
 RUN dpkg-divert --local --rename --add /sbin/initctl
@@ -61,10 +60,10 @@ mkdir -p /etc/nginx/ssl/
 ADD conf/nginx-site.conf /etc/nginx/sites-available/default.conf
 RUN ln -s /etc/nginx/sites-available/default.conf /etc/nginx/sites-enabled/default.conf
 
-RUN curl -sS https://getcomposer.org/installer | php && \
-    mv composer.phar /usr/local/bin/composer && \
-    composer global require hirak/prestissimo
-    
+RUN apt-get update && apt-get install -y curl php-mbstring && \
+    curl -sS https://getcomposer.org/installer -o composer-setup.php && \
+    php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+
 # Add git commands to allow container updating
 ADD scripts/pull /usr/bin/pull
 ADD scripts/push /usr/bin/push
@@ -81,15 +80,12 @@ ADD scripts/start.sh /start.sh
 RUN chmod 755 /start.sh
 
 # Setup Volume
-VOLUME ["/usr/share/nginx/html"]
+VOLUME ["/var/www"]
 
 # add test PHP file
-#ADD src/index.php /usr/share/nginx/html/index.php
 ADD src/index.php /var/www/html/index.php
 RUN chown -Rf www-data.www-data /var/www/html/
-
-# Expose Ports
-EXPOSE 443
+WORKDIR /var/www
+# Expose Port
 EXPOSE 80
-
 CMD ["/bin/bash", "/start.sh"]

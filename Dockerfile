@@ -61,6 +61,10 @@ mkdir -p /etc/nginx/ssl/
 ADD conf/nginx-site.conf /etc/nginx/sites-available/default.conf
 RUN ln -s /etc/nginx/sites-available/default.conf /etc/nginx/sites-enabled/default.conf
 
+RUN curl -sS https://getcomposer.org/installer | php && \
+    mv composer.phar /usr/local/bin/composer && \
+    composer global require hirak/prestissimo
+    
 # Add git commands to allow container updating
 ADD scripts/pull /usr/bin/pull
 ADD scripts/push /usr/bin/push

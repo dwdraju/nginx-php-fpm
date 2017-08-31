@@ -16,8 +16,10 @@ nginx=stable && \
 add-apt-repository ppa:nginx/$nginx && \
 apt-get update && \
 apt-get upgrade -y && \
-BUILD_PACKAGES="supervisor nginx php7.0-fpm git php7.0-mysql php7.0-curl php7.0-gd php7.0-intl php7.0-mcrypt php7.0-sqlite php7.0-tidy php7.0-xmlrpc php7.0-xsl php7.0-pgsql php7.0-ldap pwgen" && \
+BUILD_PACKAGES="supervisor nginx php7.0-fpm git php7.0-mysql php7.0-curl php7.0-gd php7.0-intl php7.0-mcrypt php7.0-sqlite php7.0-tidy php7.0-xmlrpc php7.0-xsl php7.0-pgsql php7.0-ldap pwgen unzip php7.0-zip curl php-mbstring" && \
 apt-get -y install $BUILD_PACKAGES && \
+curl -sS https://getcomposer.org/installer -o composer-setup.php && \
+php composer-setup.php --install-dir=/usr/local/bin --filename=composer && \
 apt-get remove --purge -y software-properties-common && \
 apt-get autoremove -y && \
 apt-get clean && \
@@ -60,10 +62,6 @@ mkdir -p /etc/nginx/ssl/
 ADD conf/nginx-site.conf /etc/nginx/sites-available/default.conf
 RUN ln -s /etc/nginx/sites-available/default.conf /etc/nginx/sites-enabled/default.conf
 
-RUN apt-get update && apt-get install -y curl php-mbstring && \
-    curl -sS https://getcomposer.org/installer -o composer-setup.php && \
-    php composer-setup.php --install-dir=/usr/local/bin --filename=composer
-
 # Add git commands to allow container updating
 ADD scripts/pull /usr/bin/pull
 ADD scripts/push /usr/bin/push
@@ -86,6 +84,9 @@ VOLUME ["/var/www"]
 ADD src/index.php /var/www/html/index.php
 RUN chown -Rf www-data.www-data /var/www/html/
 WORKDIR /var/www
+
 # Expose Port
 EXPOSE 80
+
 CMD ["/bin/bash", "/start.sh"]
+ENTRYPOINT ["/bin/sh", "-c"]
